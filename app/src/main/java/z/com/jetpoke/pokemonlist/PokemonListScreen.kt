@@ -19,7 +19,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -28,10 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.ImageLoader
-import coil.request.ImageRequest
-import com.google.accompanist.coil.CoilPainterDefaults
-import com.google.accompanist.coil.LocalImageLoader
 import com.google.accompanist.coil.rememberCoilPainter
 import z.com.jetpoke.MainActivity
 import z.com.jetpoke.R
@@ -188,27 +183,20 @@ fun PokedexEntryItem(
             }
     ) {
         Column {
-            /**
-             * here ths code of New coil
-             */
+
             val painter = rememberCoilPainter(
-                request = ImageRequest.Builder(LocalContext.current)
-                    .data(entry.imageUrl)
-                    .target { drawable ->
+                request = entry.imageUrl,
+                fadeIn = true,
+                requestBuilder = {
+                    size(112)
+                    target { drawable ->
                         viewModel.calcDominantColor(drawable) { color ->
                             dominantColor = color
                         }
                     }
-                    .build(),
-                fadeIn = true,
-                requestBuilder = {
-                        target { drawable ->
-                            viewModel.calcDominantColor(drawable) { color ->
-                                dominantColor = color
-                            }
-                        }
                 },
             )
+
             Image(
                 painter = painter,
                 contentDescription = "detail poke image",
@@ -285,51 +273,3 @@ private fun SearchBarPreview() {
 //        }
 //    }
 }
-
-
-/**
- * new Image coil but not work with Pallete cause Target not called
- */
-//val painter = rememberCoilPainter(
-//    request = ImageRequest.Builder(LocalContext.current)
-//        .data(entry.imageUrl)
-//        .target { drawable ->
-//            viewModel.calcDominantColor(drawable) { color ->
-//                dominantColor = color
-//            }
-//        }
-//        .build(),
-//    fadeIn = true,
-//)
-//Image(
-//painter = painter,
-//contentDescription = "detail poke image",
-//modifier = Modifier
-//.size(120.dp)
-//.align(CenterHorizontally),
-//)
-
-
-/**
- * Old Before Deprecation
- */
-//CoilImage(
-//request = ImageRequest.Builder(LocalContext.current)
-//.data(entry.imageUrl)
-//.target { drawable ->
-//    viewModel.calcDominantColor(drawable) { color ->
-//        dominantColor = color
-//    }
-//}
-//.build(),
-//contentDescription = entry.pokemonName,
-//fadeIn = true,
-//modifier = Modifier
-//.size(120.dp)
-//.align(CenterHorizontally)
-//) {
-//    CircularProgressIndicator(
-//        color = MaterialTheme.colors.primary,
-//        modifier = Modifier.scale(.5f)
-//    )
-//}

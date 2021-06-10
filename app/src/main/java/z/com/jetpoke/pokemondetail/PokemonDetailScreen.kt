@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +43,8 @@ import z.com.jetpoke.utils.parseStatToColor
 import z.com.jetpoke.utils.parseTypeToColor
 import java.util.*
 
+//background of whole Detail Screen depends on PokemonType
+val dominantBackgroundByType = mutableStateOf(Color.White)
 
 @Composable
 fun PokemonDetailScreen(
@@ -60,7 +63,8 @@ fun PokemonDetailScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(dominantColor)
+//            .background(dominantColor)
+            .background(dominantBackgroundByType.value)
             .padding(bottom = 16.dp)
     ) {
         PokemonDetailTopSection(
@@ -142,6 +146,7 @@ fun PokemonDetailTopSection(
                 .size(36.dp)
                 .offset(16.dp, 16.dp)
                 .clickable {
+                    dominantBackgroundByType.value = Color.White
                     navController.popBackStack()
                 }
         )
@@ -218,13 +223,14 @@ fun PokemonTypeSection(pokeTypes: List<PokeType>) {
     ) {
 
         pokeTypes.forEach { type ->
+            dominantBackgroundByType.value = parseTypeToColor(type)
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 8.dp)
                     .clip(CircleShape)
-                    .background(parseTypeToColor(type))
+                    .background(dominantBackgroundByType.value)
                     .height(35.dp)
             ) {
                 Text(
@@ -295,6 +301,18 @@ fun PokemonDetailDataItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(text = "$dataValue$dataUnit", color = MaterialTheme.colors.onSurface)
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun PokemonStateItemPreview(){
+    Column {
+
+    repeat(5) {
+        PokemonStatItem(statName = "Hp", statValue = it * 20, statMaxValue = 100, statColor = Color.Red, animDelay = it * 50)
+        Spacer(modifier = Modifier.height(8.dp))
+    }
     }
 }
 
